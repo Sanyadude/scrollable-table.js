@@ -3,13 +3,14 @@
 function ScrollableTable(tableId, tableName, scrollWidth) {
     tableName = tableName ? tableName : 'table';
     scrollWidth = scrollWidth ? scrollWidth : 17;
-    let tableDataAttrName = 'table';
-    let tableContainerDataAttrName = 'table-container';
-    let tableHeadContainerDataAttrName = 'table-head-container';
-    let tableBodyContainerDataAttrName = 'table-body-container';
-    let tableTemporaryHeadDataAttrName = 'table-temporary-head';
-    let tableHeadDataAttrName = 'table-head';
-    let tableBodyDataAttrName = 'table-body';
+    let tablePreffix = 'table';
+    let tableDataAttrName = tablePreffix;
+    let tableContainerDataAttrName = tablePreffix + '-container';
+    let tableHeadContainerDataAttrName = tablePreffix + '-head-container';
+    let tableBodyContainerDataAttrName = tablePreffix + '-body-container';
+    let tableTemporaryHeadDataAttrName = tablePreffix + '-temporary-head';
+    let tableHeadDataAttrName = tablePreffix + '-head';
+    let tableBodyDataAttrName = tablePreffix + '-body';
     let tr = 'tr';
     let th = 'th';
     let td = 'td';
@@ -22,7 +23,6 @@ function ScrollableTable(tableId, tableName, scrollWidth) {
         let attributePrefix = 'data-scrollable-';
         let dataAttr = attributePrefix + name;
         let names = {
-            'name': name,
             'dataAttribute': dataAttr,
             'selector': '[' + dataAttr + '="' + tableName + '"]'
         };
@@ -42,7 +42,17 @@ function ScrollableTable(tableId, tableName, scrollWidth) {
     function setTableAttr(element, name) {
         element.setAttribute(resolveName(name).dataAttribute, tableName);
     }
+    
+    function createAndSetTableAttr(tag, attr) {
+        let el = document.createElement(tag);
+        setTableAttr(el, attr);
+        return el;
+    }
 
+    function appendChildToElement(el, child) {
+        el.appendChild(child);
+    }
+    
     function initializeComponents() {
         let table = document.getElementById(tableId);
         setTableAttr(table, tableDataAttrName);
@@ -53,22 +63,19 @@ function ScrollableTable(tableId, tableName, scrollWidth) {
         let tbody = select(tableDataAttrName, tbodyTag);
         setTableAttr(tbody, tableBodyDataAttrName);
 
-        let tableContainer = document.createElement(div);
+        let tableContainer = createAndSetTableAttr(div, tableContainerDataAttrName);
         tableContainer.style.height = tableContainerHeight;
-        setTableAttr(tableContainer, tableContainerDataAttrName);
 
         let tableParent = table.parentElement;
         tableParent.insertBefore(tableContainer, table);
 
-        let tableHeadContainer = document.createElement(div);
-        setTableAttr(tableHeadContainer, tableHeadContainerDataAttrName);
-        tableContainer.appendChild(tableHeadContainer);
+        let tableHeadContainer = createAndSetTableAttr(div, tableHeadContainerDataAttrName);
+        appendChildToElement(tableContainer, tableHeadContainer);
 
-        let tableBodyContainer = document.createElement(div);
-        setTableAttr(tableBodyContainer, tableBodyContainerDataAttrName);
-        tableContainer.appendChild(tableBodyContainer);
+        let tableBodyContainer = createAndSetTableAttr(div, tableBodyContainerDataAttrName);
+        appendChildToElement(tableContainer, tableBodyContainer);
 
-        tableBodyContainer.appendChild(table);
+        appendChildToElement(tableBodyContainer, table);
     }
 
     function getTableCellWidthArray() {
@@ -106,10 +113,9 @@ function ScrollableTable(tableId, tableName, scrollWidth) {
     }
 
     function moveTableHeadToContainer() {
-        let headTable = document.createElement(tableDataAttrName);
-        setTableAttr(headTable, tableTemporaryHeadDataAttrName);
-        select(tableHeadContainerDataAttrName).appendChild(headTable);
-        select(tableHeadContainerDataAttrName, tableDataAttrName).appendChild(select(tableHeadDataAttrName));
+        let headTable = createAndSetTableAttr(tableDataAttrName, tableTemporaryHeadDataAttrName);
+        appendChildToElement(select(tableHeadContainerDataAttrName), headTable);
+        appendChildToElement(select(tableHeadContainerDataAttrName, tableDataAttrName), select(tableHeadDataAttrName));
     }
 
     function setScrollBodyHeight() {
