@@ -15,7 +15,7 @@ new ScrollableTable(scrollableTableId, scrollableTableName, scrollWidth) - creat
 or you can use it just with id:
 <pre>
 let scrollableTable2 = new ScrollableTable(scrollableTableId);
-</pre></br></br>
+</pre></br>
 ScrollableTable has 2 methods you can call - </br>
 <pre>
 scrollableTable.resetTableHead();
