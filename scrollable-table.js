@@ -3,14 +3,28 @@
 function ScrollableTable(tableId, tableName, scrollWidth) {
     tableName = tableName ? tableName : 'table';
     scrollWidth = scrollWidth ? scrollWidth : 17;
+    let tableDataAttrName = 'table';
+    let tableContainerDataAttrName = 'table-container';
+    let tableHeadContainerDataAttrName = 'table-head-container';
+    let tableBodyContainerDataAttrName = 'table-body-container';
+    let tableTemporaryHeadDataAttrName = 'table-temporary-head';
+    let tableHeadDataAttrName = 'table-head';
+    let tableBodyDataAttrName = 'table-body';
+    let tr = 'tr';
+    let th = 'th';
+    let td = 'td';
+    let div = 'div';
+    let theadTag = 'thead';
+    let tbodyTag = 'tbody';
+    let tableContainerHeight = '100%';
 
     function resolveName(name) {
         let attributePrefix = 'data-scrollable-';
-        let dataAttrName = attributePrefix + name;
+        let dataAttr = attributePrefix + name;
         let names = {
             'name': name,
-            'dataAttribute': dataAttrName,
-            'selector': '[' + dataAttrName + '="' + tableName + '"]'
+            'dataAttribute': dataAttr,
+            'selector': '[' + dataAttr + '="' + tableName + '"]'
         };
         return names
     }
@@ -31,27 +45,27 @@ function ScrollableTable(tableId, tableName, scrollWidth) {
 
     function initializeComponents() {
         let table = document.getElementById(tableId);
-        setTableAttr(table, 'table');
+        setTableAttr(table, tableDataAttrName);
 
-        let thead = select('table', 'thead');
-        setTableAttr(thead, 'table-head');
+        let thead = select(tableDataAttrName, theadTag);
+        setTableAttr(thead, tableHeadDataAttrName);
 
-        let tbody = select('table', 'tbody');
-        setTableAttr(tbody, 'table-body');
+        let tbody = select(tableDataAttrName, tbodyTag);
+        setTableAttr(tbody, tableBodyDataAttrName);
 
-        let tableContainer = document.createElement('div');
-        tableContainer.style.height = '100%';
-        setTableAttr(tableContainer, 'table-container');
+        let tableContainer = document.createElement(div);
+        tableContainer.style.height = tableContainerHeight;
+        setTableAttr(tableContainer, tableContainerDataAttrName);
 
         let tableParent = table.parentElement;
         tableParent.insertBefore(tableContainer, table);
 
-        let tableHeadContainer = document.createElement('div');
-        setTableAttr(tableHeadContainer, 'table-head-container');
+        let tableHeadContainer = document.createElement(div);
+        setTableAttr(tableHeadContainer, tableHeadContainerDataAttrName);
         tableContainer.appendChild(tableHeadContainer);
 
-        let tableBodyContainer = document.createElement('div');
-        setTableAttr(tableBodyContainer, 'table-body-container');
+        let tableBodyContainer = document.createElement(div);
+        setTableAttr(tableBodyContainer, tableBodyContainerDataAttrName);
         tableContainer.appendChild(tableBodyContainer);
 
         tableBodyContainer.appendChild(table);
@@ -61,7 +75,7 @@ function ScrollableTable(tableId, tableName, scrollWidth) {
         let cellWidthArray = [];
         let tableWidth = 0;
 
-        let cells = selectAll('table-head', 'tr th');
+        let cells = selectAll(tableHeadDataAttrName, tr + ' ' + th);
 
         cells.forEach((el) => {
             tableWidth += el.offsetWidth;
@@ -75,64 +89,56 @@ function ScrollableTable(tableId, tableName, scrollWidth) {
     }
 
     function setTableCellsWith() {
-        let theadRow = select('table-head', 'tr');
-        let tbodyRows = selectAll('table-body', 'tr');
+        let theadRow = select(tableHeadDataAttrName, tr);
+        let tbodyRows = selectAll(tableBodyDataAttrName, tr);
 
         let cellsWidthArray = getTableCellWidthArray();
 
-        selectAll('table-head', 'th').forEach((el, index) => {
+        selectAll(tableHeadDataAttrName, th).forEach((el, index) => {
             let cellWidth = cellsWidthArray[index] + '%';
             el.style.width = cellWidth;
         });
 
-        selectAll('table-body', 'tr td').forEach((el, index) => {
+        selectAll(tableBodyDataAttrName, tr + ' ' + td).forEach((el, index) => {
             let cellWidth = cellsWidthArray[index] + '%';
             el.style.width = cellWidth;
         });
     }
 
     function moveTableHeadToContainer() {
-        let headTable = document.createElement('table');
-        setTableAttr(headTable, 'table-temporary-head');
-        select('table-head-container').appendChild(headTable);
-        select('table-head-container', 'table').appendChild(select('table-head'));
-    }
-
-    function getScrollableBodyHeight() {
-        let headersHeight = select('table-head-container').offsetHeight;
-
-        let heightString = 'calc(100% - ' + headersHeight + 'px)';
-        return heightString;
+        let headTable = document.createElement(tableDataAttrName);
+        setTableAttr(headTable, tableTemporaryHeadDataAttrName);
+        select(tableHeadContainerDataAttrName).appendChild(headTable);
+        select(tableHeadContainerDataAttrName, tableDataAttrName).appendChild(select(tableHeadDataAttrName));
     }
 
     function setScrollBodyHeight() {
-        let maxHeight = getScrollableBodyHeight();
-        let tableBodyContainer = select('table-body-container');
+        let tableBodyContainer = select(tableBodyContainerDataAttrName);
         tableBodyContainer.style.overflow = 'auto';
-        tableBodyContainer.style.maxHeight = maxHeight;
+        tableBodyContainer.style.maxHeight = 'calc(100% - ' + select(tableHeadContainerDataAttrName).offsetHeight + 'px)';
     }
 
     function addHeadOffsetIfScroll() {
-        let tableBodyContainerHeight = select('table-body-container').offsetHeight;
-        let tableBodyHeight = select('table-body').offsetHeight;
+        let tableBodyContainerHeight = select(tableBodyContainerDataAttrName).offsetHeight;
+        let tableBodyHeight = select(tableBodyDataAttrName).offsetHeight;
 
         let hightDiff = tableBodyContainerHeight - tableBodyHeight;
 
         if (hightDiff < 0) {
-            select('table-head-container').style.paddingRight = scrollWidth + 'px';
+            select(tableHeadContainerDataAttrName).style.paddingRight = scrollWidth + 'px';
         }
     }
 
     ScrollableTable.prototype.resetTableHead = function() {
-        select('table').insertBefore(select('table-head'), select('table-body'));
-        select('table-container').parentElement.insertBefore(select('table'), select('table-container'));
-        select('table-container').remove();
-        selectAll('table', 'tr *').forEach((el) => {
+        select(tableDataAttrName).insertBefore(select(tableHeadDataAttrName), select(tableBodyDataAttrName));
+        select(tableContainerDataAttrName).parentElement.insertBefore(select(tableDataAttrName), select(tableContainerDataAttrName));
+        select(tableContainerDataAttrName).remove();
+        selectAll(tableDataAttrName, tr + ' *').forEach((el) => {
             el.style.removeProperty('width');
         });
-        select('table').removeAttribute(resolveName('table').dataAttribute);
-        select('table-head').removeAttribute(resolveName('table-head').dataAttribute);
-        select('table-body').removeAttribute(resolveName('table-body').dataAttribute);
+        select(tableDataAttrName).removeAttribute(resolveName(tableDataAttrName).dataAttribute);
+        select(tableHeadDataAttrName).removeAttribute(resolveName(tableHeadDataAttrName).dataAttribute);
+        select(tableBodyDataAttrName).removeAttribute(resolveName(tableBodyDataAttrName).dataAttribute);
     }
 
      ScrollableTable.prototype.createScrollableTable = function() {
