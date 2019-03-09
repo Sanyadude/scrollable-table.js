@@ -18,7 +18,6 @@ let scrollableTable2 = new ScrollableTable(scrollableTableId);
 </pre></br>
 ScrollableTable has 2 methods you can call - 
 <pre>
-</br>
 scrollableTable.resetTableHead();
 </pre>resets all attributes and delete all wrappers that was added/created;</br>
 <pre>
