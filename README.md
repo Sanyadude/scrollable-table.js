@@ -17,11 +17,13 @@ or you can use it just with id:
 let scrollableTable2 = new ScrollableTable(scrollableTableId);
 </pre></br>
 ScrollableTable has 2 methods you can call - 
-<pre>
-scrollableTable.resetTableHead();
-</pre></br>
+</br>
 resets all attributes and delete all wrappers that was added/created;</br>
 <pre>
-scrollableTable.createScrollableTable();
-</pre></br>
+scrollableTable.resetTableHead();
+</pre>
+</br>
 creates table again;
+<pre>
+scrollableTable.createScrollableTable();
+</pre>
