@@ -10,7 +10,7 @@ let scrollableTable = new ScrollableTable(scrollableTableId, scrollableTableName
 </pre></br>
 scrollableTableId - Id of table;</br>
 scrollableTableName - js will use this name to set data-scrollable-table attributes to wrappers and table parts so it can be easy selected and customized;</br>
-scrollWidth - for setting table header wrapper padding-right;</br></br>
+scrollWidth - for setting table header wrapper padding-right;</br>
 new ScrollableTable(scrollableTableId, scrollableTableName, scrollWidth) - creates scrollable table</br>
 or you can use it just with id:
 <pre>
