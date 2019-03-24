@@ -1,6 +1,6 @@
 'use strict';
 
-function ScrollableTable(tableId) {
+var ScrollableTable = function(tableId) {
     if (!tableId) {
         throw Error('table id is not defined');
         return;
@@ -197,4 +197,4 @@ function ScrollableTable(tableId) {
     }
 
     this.init();
-}
+};
