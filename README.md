@@ -2,6 +2,7 @@
 
 example of use - index.html
 
+# Usage
 <pre>
 let scrollableTableId = "table";
 let scrollableTable = new ScrollableTable(scrollableTableId);
