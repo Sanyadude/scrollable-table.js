@@ -1,8 +1,11 @@
 'use strict';
 
-function ScrollableTable(tableId, tableName, scrollWidth) {
-    tableName = tableName ? tableName : 'table';
-    scrollWidth = scrollWidth ? scrollWidth : 17;
+function ScrollableTable(tableId) {
+    if (!tableId) {
+        throw Error('table id is not defined');
+        return;
+    }
+    let tableName = tableId;
     let tablePreffix = 'table';
     let tableDataAttrName = tablePreffix;
     let tableContainerDataAttrName = tablePreffix + '-container';
@@ -42,7 +45,7 @@ function ScrollableTable(tableId, tableName, scrollWidth) {
     function setTableAttr(element, name) {
         element.setAttribute(resolveName(name).dataAttribute, tableName);
     }
-    
+
     function createAndSetTableAttr(tag, attr) {
         let el = document.createElement(tag);
         setTableAttr(el, attr);
@@ -52,15 +55,23 @@ function ScrollableTable(tableId, tableName, scrollWidth) {
     function appendChildToElement(el, child) {
         el.appendChild(child);
     }
-    
+
     function initializeComponents() {
-        let table = document.getElementById(tableId);
+        let table = document.getElementById(tableName);
         setTableAttr(table, tableDataAttrName);
 
         let thead = select(tableDataAttrName, theadTag);
+        if (!thead) {
+            throw Error('table with id - ' + tableName + ' doesn\'t have thead');
+            return;
+        }
         setTableAttr(thead, tableHeadDataAttrName);
 
         let tbody = select(tableDataAttrName, tbodyTag);
+        if (!tbody) {
+            throw Error('table with id - ' + tableName + ' doesn\'t have tbody');
+            return;
+        }
         setTableAttr(tbody, tableBodyDataAttrName);
 
         let tableContainer = createAndSetTableAttr(div, tableContainerDataAttrName);
@@ -120,22 +131,27 @@ function ScrollableTable(tableId, tableName, scrollWidth) {
 
     function setScrollBodyHeight() {
         let tableBodyContainer = select(tableBodyContainerDataAttrName);
+        let tableBody = select(tableBodyContainerDataAttrName);
         tableBodyContainer.style.overflow = 'auto';
         tableBodyContainer.style.maxHeight = 'calc(100% - ' + select(tableHeadContainerDataAttrName).offsetHeight + 'px)';
     }
 
     function addHeadOffsetIfScroll() {
-        let tableBodyContainerHeight = select(tableBodyContainerDataAttrName).offsetHeight;
+        let tableBodyContainer = select(tableBodyContainerDataAttrName);
+        let tableBodyContainerHeight = tableBodyContainer.offsetHeight;
+        let tableBodyContainerWidth = tableBodyContainer.offsetWidth;
+        let tableWidth = select(tableDataAttrName).offsetWidth;
         let tableBodyHeight = select(tableBodyDataAttrName).offsetHeight;
 
         let hightDiff = tableBodyContainerHeight - tableBodyHeight;
+        let scrollWidth = tableBodyContainerWidth - tableWidth;
 
         if (hightDiff < 0) {
             select(tableHeadContainerDataAttrName).style.paddingRight = scrollWidth + 'px';
         }
     }
 
-    ScrollableTable.prototype.resetTableHead = function() {
+    function resetScrollableTableComponents() {
         select(tableDataAttrName).insertBefore(select(tableHeadDataAttrName), select(tableBodyDataAttrName));
         select(tableContainerDataAttrName).parentElement.insertBefore(select(tableDataAttrName), select(tableContainerDataAttrName));
         select(tableContainerDataAttrName).remove();
@@ -147,13 +163,38 @@ function ScrollableTable(tableId, tableName, scrollWidth) {
         select(tableBodyDataAttrName).removeAttribute(resolveName(tableBodyDataAttrName).dataAttribute);
     }
 
-     ScrollableTable.prototype.createScrollableTable = function() {
+    function isTableInitialized() {
+        let table = document.getElementById(tableName);
+        if (!table) {
+            throw Error('can\'t find table with id - ' + tableName);
+            return;
+        }
+        return table.hasAttribute(resolveName(tableDataAttrName).dataAttribute);
+    }
+
+    this.reset = function () {
+        if (isTableInitialized()) {
+            resetScrollableTableComponents();
+        }
+        return this;
+    }
+
+    this.init = function () {
+        if (isTableInitialized()) {
+            return;
+        }
         initializeComponents();
         setTableCellsWith();
         moveTableHeadToContainer();
         setScrollBodyHeight();
         addHeadOffsetIfScroll();
+        return this;
     }
 
-    this.createScrollableTable();
+    this.reinit = function () {
+        this.reset().init();
+        return this;
+    }
+
+    this.init();
 }
