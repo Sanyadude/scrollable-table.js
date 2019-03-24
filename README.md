@@ -8,7 +8,7 @@ let scrollableTableId = "table";
 let scrollableTable = new ScrollableTable(scrollableTableId);
 </pre>
 scrollableTableId - Id of table;</br>
-js will use set data-scrollable-table attributes with id value to wrappers and table parts so it can be easy selected and customized;</br>
+js will set data-scrollable-table attributes with id value to wrappers and table parts so it can be easy selected and customized;</br>
 new ScrollableTable(scrollableTableId) - creates scrollable table</br>
 ScrollableTable has 3 methods you can call - 
 </br>
